@@ -6,80 +6,96 @@ import android.graphics.Canvas;
 public class BallSprite
 {
 	private static Bitmap image;
-	private static int x, y, width, height;
+	private static double x;
+	private static double y;
+	private static double width;
+	private static double height;
 	private static double xVelocity, yVelocity;
+	private boolean isMoving = false;
 
-	public BallSprite(Bitmap bmp)
+	protected BallSprite(Bitmap bmp)
 	{
-		image = bmp;
+		image = Bitmap.createScaledBitmap(bmp, 100, 100, false);
+		width = image.getWidth();
+		height = image.getHeight();
 	}
 
-	public void update()
+	protected void update()
 	{
 		this.x += xVelocity;
 		this.y += yVelocity;
 	}
 
-	public int getHeight()
+	protected double getHeight()
 	{
 		return height;
 	}
 
-	public void setHeight(int height)
+	protected void setHeight(int height)
 	{
 		this.height = height;
 	}
 
-	public int getWidth() {
+	protected double getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width)
+	protected void setWidth(int width)
 	{
 		this.width = width;
 	}
 
-	public double getX()
+	protected double getX()
 	{
 		return x;
 	}
 
-	public void setX(int x)
+	protected void setX(double x)
 	{
 		this.x = x;
 	}
 
-	public double getxVelocity()
+	protected double getxVelocity()
 	{
 		return xVelocity;
 	}
 
-	public void setxVelocity(double xVelocity)
+	protected void setxVelocity(double xVelocity)
 	{
 		this.xVelocity = xVelocity;
 	}
 
-	public double getY() {
+	protected double getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	protected void setY(double y) {
 		this.y = y;
 	}
 
-	public double getyVelocity()
+	protected double getyVelocity()
 	{
 		return yVelocity;
 	}
 
-	public void setyVelocity(double yVelocity)
+	protected void setyVelocity(double yVelocity)
 	{
 		this.yVelocity = yVelocity;
 	}
 
-	public void draw (Canvas canvas)
+	protected boolean isMoving()
 	{
-		canvas.drawBitmap(image, x, y, null);
+		return isMoving;
+	}
+
+	protected void setMoving(boolean isMoving)
+	{
+		this.isMoving = isMoving;
+	}
+
+	protected void draw (Canvas canvas)
+	{
+		canvas.drawBitmap(image, (int)x, (int) y, null);
 	}
 
 }

@@ -16,14 +16,14 @@ public class BallPhysics {
 	// (a*t)+v1 = v2
 	private BallSprite ball;
 
-	public BallPhysics(BallSprite ball)
+	protected BallPhysics(BallSprite ball)
 	{
 		this.ball = ball;
 	}
 
-	public void ballAnimation() {
+	protected void ballAnimation() {
 
-		if (ball == null)
+		if (ball == null || !ball.isMoving())
 		{
 			return;
 		}
@@ -36,15 +36,16 @@ public class BallPhysics {
 		ball.setxVelocity(-(ACCELERATION * 1) + ball.getxVelocity());
 		ball.update();
 
-		int maxY = screenWidth - (ball.getHeight() / 2);
-		int maxX = screenHeight - (ball.getWidth() / 2);
-		int minX = 0 + ball.getWidth() / 2;
+		double maxY = screenWidth - (ball.getHeight() / 2);
+		double maxX = screenHeight - (ball.getWidth() / 2);
+		double minX = 0 + ball.getWidth() / 2;
 
 		// Ball is out of bounds in y dimension
 		if (ball.getY() > maxY) {
 			ball.setY(maxY);
 			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
-		} else if (ball.getY() < 0) {
+		}
+		else if (ball.getY() < 0) {
 			ball.setY(0);
 			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
 		}
@@ -60,8 +61,8 @@ public class BallPhysics {
 		}
 
 		// ball is rolling along the bottom
-		if (ball.getY() == maxY) {
-			ball.setxVelocity(COEFFICIENT_OF_FRICTION * ball.getxVelocity());
+		if (ball.getX() == maxX) {
+			ball.setyVelocity(COEFFICIENT_OF_FRICTION * ball.getyVelocity());
 		}
 	}
 }
