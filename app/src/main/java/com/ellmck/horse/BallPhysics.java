@@ -60,7 +60,7 @@ public class BallPhysics {
 			ball.setX(minX);
 			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
 		}
-		else if (ball.getX() > maxX * 4)
+		else if (ball.getX() > maxX)
 		{
 			ball.setX(maxX);
 			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
@@ -95,7 +95,7 @@ public class BallPhysics {
 //		}
 
 		// ball is rolling along the bottom
-		if (ball.getX() == maxX)
+		if (ball.getX() == minX)
 		{
 			ball.setyVelocity(COEFFICIENT_OF_FRICTION * ball.getyVelocity());
 		}
