@@ -21,7 +21,8 @@ public class BallPhysics {
 		this.ball = ball;
 	}
 
-	protected void ballAnimation() {
+	protected void ballAnimation(NetSprite net)
+	{
 
 		if (ball == null || !ball.isMoving())
 		{
@@ -36,32 +37,66 @@ public class BallPhysics {
 		ball.setxVelocity(-(ACCELERATION * 1) + ball.getxVelocity());
 		ball.update();
 
-		double maxY = screenWidth - (ball.getHeight() / 2);
-		double maxX = screenHeight - (ball.getWidth() / 2);
-		double minX = 0 + ball.getWidth() / 2;
+		double radius = ball.getWidth() / 2;
+		double maxY = screenWidth - radius;
+		double maxX = screenHeight - radius;
+		double minX = 0 + radius;
 
 		// Ball is out of bounds in y dimension
-		if (ball.getY() > maxY) {
+		if (ball.getY() > maxY)
+		{
 			ball.setY(maxY);
 			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
 		}
-		else if (ball.getY() < 0) {
+		else if (ball.getY() < 0)
+		{
 			ball.setY(0);
 			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
 		}
 
-
-		// Ball is out of bounds in x dimension
-		if (ball.getX() > maxX) {
-			ball.setX(maxX);
-			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
-		} else if (ball.getX() < minX) {
+		// Ball hits the floor
+		if (ball.getX() < minX)
+		{
 			ball.setX(minX);
 			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
 		}
+		else if (ball.getX() > maxX * 4)
+		{
+			ball.setX(maxX);
+			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
+		}
+
+		//backboard physics
+//		if (ball.getX() > net.getBackboard().top && ball.getY()> net.getBackboard().left)
+//		{
+//			ball.setX(net.getBackboard().top);
+//			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
+//			ball.setY(net.getBackboard().left);
+//			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
+//		}
+//		else if (ball.getX() > net.getBackboard().right && ball.getY() > net.getBackboard().bottom)
+//		{
+//			ball.setX(net.getBackboard().right);
+//			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
+//			ball.setY(net.getBackboard().bottom);
+//			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
+//		}
+// 		else if (ball.getX() - radius <  net.getBackboard().top)
+// 		{
+//			ball.setX(net.getBackboard().top);
+//			ball.setxVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getxVelocity());
+//		}
+//		if (ball.getY() + ball.getWidth() / 2 > net.getBackboard().right) {
+//			ball.setY(net.getBackboard().right);
+//			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
+//		} else if (ball.getY() - ball.getWidth() / 2 <  net.getBackboard().left) {
+//			ball.setY(net.getBackboard().left);
+//			ball.setyVelocity(-COEFFICIENT_OF_RESTITUTION * ball.getyVelocity());
+//		}
 
 		// ball is rolling along the bottom
-		if (ball.getX() == maxX) {
+		if (ball.getX() == maxX)
+		{
 			ball.setyVelocity(COEFFICIENT_OF_FRICTION * ball.getyVelocity());
 		}
 	}

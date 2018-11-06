@@ -6,7 +6,7 @@ import android.graphics.Paint;
 
 public class AimSprite
 {
-
+	private final static int AIM_WIDTH = 10;
 
 	private int startX;
 	private int stopX;
@@ -17,7 +17,7 @@ public class AimSprite
 	protected AimSprite()
 	{
 		lineColor.setColor(Color.WHITE);
-		lineColor.setStrokeWidth(2f);
+		lineColor.setStrokeWidth(AIM_WIDTH);
 	}
 
 	protected void draw(Canvas canvas)
