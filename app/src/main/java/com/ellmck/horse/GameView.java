@@ -19,9 +19,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 	public GameView(Context context)
 	{
 		super(context);
-
 		getHolder().addCallback(this);
-
 		thread = new MainThread(getHolder(), this);
 		setFocusable(true);
 	}
@@ -32,15 +30,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 
 	}
 
+
 	@Override
 	public void surfaceCreated(SurfaceHolder holder)
 	{
-		ball = new BallSprite(BitmapFactory.decodeResource(getResources(),R.drawable.basketball));
+//		ball = new BallSprite(BitmapFactory.decodeResource(getResources(), R.drawable.basketball));
+		ball = new BallSprite();
 		ballPhysics = new BallPhysics(ball);
 		net = new NetSprite(ball.getWidth() * 1.885);
 		aimSprite = new AimSprite();
 		thread.setRunning(true);
 		thread.start();
+
 	}
 
 	@Override
@@ -79,14 +80,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 //					//tada, if this is true, you've started your click inside your bitmap
 //				}
 				ball.setMoving(false);
-				ball.setX(x - ball.getWidth()*0.5);
-				ball.setY(y - ball.getWidth()*0.5);
+				ball.setX(x);
+				ball.setY(y);
 				aimSprite.setStartX(x);
 				aimSprite.setStartY(y);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				ball.setX(x - ball.getWidth()*0.5);
-				ball.setY(y - ball.getWidth()*0.5);
+				ball.setX(x);
+				ball.setY(y);
 				aimSprite.setStopX(x);
 				aimSprite.setStopY(y);
 				aimSprite.setLineColor(Color.WHITE);
@@ -94,8 +95,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 			case MotionEvent.ACTION_UP:
 				double xDiff = -(x - aimSprite.getStartX())*0.2;
 				double yDiff = -(y - aimSprite.getStartY())*0.2;
-				ball.setxVelocity(xDiff);
-				ball.setyVelocity(yDiff);
+				ball.setxVelocity((int)xDiff);
+				ball.setyVelocity((int)yDiff);
 				aimSprite.setLineColor(0);
 
 				if (xDiff < -10 || xDiff > 10 || yDiff < -10 || yDiff > 10 )

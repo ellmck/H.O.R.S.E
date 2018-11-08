@@ -1,101 +1,121 @@
 package com.ellmck.horse;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import android.graphics.*;
 
 public class BallSprite
 {
-	private static Bitmap image;
-	private static double x;
-	private static double y;
-	private static double width;
-	private static double height;
-	private static double xVelocity, yVelocity;
+	private Bitmap image;
+	private int x;
+	private int y;
+	private int width;
+	private int height;
+	private int radius;
+	private int xVelocity, yVelocity;
 	private boolean isMoving = false;
+	private static final Paint ballPaint = new Paint();
+	private static final int BALL_COLOR = Color.rgb(0, 255, 0);
 
-	protected BallSprite(Bitmap bmp)
+	public BallSprite(Bitmap bmp)
 	{
-		image = Bitmap.createScaledBitmap(bmp, 100, 100, false);
-		width = image.getWidth();
-		height = image.getHeight();
+	image = Bitmap.createScaledBitmap(bmp, 100, 100, false);
+	width = image.getWidth();
+	height = image.getHeight();
 	}
 
-	protected void update()
+	public BallSprite()
+	{
+		x = 0;
+		y= 0;
+		radius = 50;
+		width = radius * 2 ;
+		ballPaint.setColor(BALL_COLOR);
+	}
+	public void update()
 	{
 		this.x += xVelocity;
 		this.y += yVelocity;
 	}
 
-	protected double getHeight()
+	public int getHeight()
 	{
 		return height;
 	}
 
-	protected void setHeight(int height)
+	public void setHeight(int height)
 	{
 		this.height = height;
 	}
 
-	protected double getWidth() {
+	public int getRadius() {
+		return radius;
+	}
+
+	public void setRadius(int radius)
+	{
+		this.radius = radius;
+	}
+
+	public int getWidth() {
 		return width;
 	}
 
-	protected void setWidth(int width)
+	public void setWidth(int width)
 	{
 		this.width = width;
 	}
 
-	protected double getX()
+	public int getX()
 	{
 		return x;
 	}
 
-	protected void setX(double x)
+	public void setX(int x)
 	{
 		this.x = x;
 	}
 
-	protected double getxVelocity()
+	public int getxVelocity()
 	{
 		return xVelocity;
 	}
 
-	protected void setxVelocity(double xVelocity)
+	public void setxVelocity(int xVelocity)
 	{
 		this.xVelocity = xVelocity;
 	}
 
-	protected double getY() {
+	public int getY() {
 		return y;
 	}
 
-	protected void setY(double y) {
+	public void setY(int y) {
 		this.y = y;
 	}
 
-	protected double getyVelocity()
+	public int getyVelocity()
 	{
 		return yVelocity;
 	}
 
-	protected void setyVelocity(double yVelocity)
+	public void setyVelocity(int yVelocity)
 	{
 		this.yVelocity = yVelocity;
 	}
 
-	protected boolean isMoving()
+	public boolean isMoving()
 	{
 		return isMoving;
 	}
 
-	protected void setMoving(boolean isMoving)
+	public void setMoving(boolean isMoving)
 	{
 		this.isMoving = isMoving;
 	}
 
-	protected void draw (Canvas canvas)
+	public void draw (Canvas canvas)
 	{
-		canvas.drawBitmap(image, (int)x, (int) y, null);
+		canvas.drawCircle(x, y, radius, ballPaint);
+//		canvas.drawBitmap(image, x,  y, null);
 	}
 
 }
