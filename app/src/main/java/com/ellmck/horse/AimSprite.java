@@ -6,23 +6,25 @@ import android.graphics.Paint;
 
 public class AimSprite
 {
-	private final static int AIM_WIDTH = 10;
+	private final static int AIM_WIDTH = 6;
 
 	private int startX;
 	private int stopX;
 	private int startY;
 	private int stopY;
-	private Paint lineColor = new Paint();
+	private int lineColor = Color.rgb(0,191,255);
+	private Paint linePaint = new Paint();
 
 	protected AimSprite()
 	{
-		lineColor.setColor(Color.WHITE);
-		lineColor.setStrokeWidth(AIM_WIDTH);
+		linePaint.setColor(lineColor);
+		linePaint.setStrokeWidth(AIM_WIDTH);
+//		lineColor.setPathEffect(new DashPathEffect(new float[]{2,4},50));
 	}
 
 	protected void draw(Canvas canvas)
 	{
-		canvas.drawLine(startX, startY, stopX, stopY, lineColor);
+		canvas.drawLine(startX, startY, stopX, stopY, linePaint);
 	}
 
 	public int getStartX()
@@ -65,13 +67,23 @@ public class AimSprite
 		this.stopY = stopY;
 	}
 
-	public Paint getLineColor()
+	public Paint getLinePaint()
+	{
+		return linePaint;
+	}
+
+	public void setLinePaint(int color)
+	{
+		linePaint.setColor(color);
+	}
+
+	public int getLineColor()
 	{
 		return lineColor;
 	}
 
-	public void setLineColor(int color)
+	public void setLineColor(int lineColor)
 	{
-		lineColor.setColor(color);
+		this.lineColor = lineColor;
 	}
 }

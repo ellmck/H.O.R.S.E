@@ -17,63 +17,70 @@ public class NetSprite
 	private static final double BB_WIDTH_MULTIPLIER = 0.333;
 	private static final int RIM_COLOR = Color.rgb(170, 27, 44);
 	private static final Paint rimPaint = new Paint();
-	private static double backBoardHeight;
-	private static double bbWidth;
+	private static double backboardHeight;
+	private static double backboardGap;
 	private static Rect backboard = new Rect();
-	private static Rect test = new Rect();
+	private static Rect backboardConnector = new Rect();
 	private static double holeInNet;
 	private static int leftRimX;
 
 	protected NetSprite(double holeInNet)
 	{
 		this.holeInNet = holeInNet;
-		this.backBoardHeight = holeInNet * BB_HEIGHT_MULTIPLIER;
-		bbWidth = holeInNet * BB_WIDTH_MULTIPLIER;
+		this.backboardHeight = holeInNet * BB_HEIGHT_MULTIPLIER;
+		backboardGap = holeInNet * BB_WIDTH_MULTIPLIER;
 
-		backboard.set((int)(RIGHT_RIM_X + bbWidth),
-					  (int)(RIGHT_RIM_Y + bbWidth),
-					  (int)(RIGHT_RIM_X + bbWidth + 20),
-					  (int)(RIGHT_RIM_Y - backBoardHeight));
+		backboard.set((int)(RIGHT_RIM_X + backboardGap),
+					  (int)(RIGHT_RIM_Y + backboardGap),
+					  (int)(RIGHT_RIM_X + backboardGap + RIM_RADIUS),
+					  (int)(RIGHT_RIM_Y - backboardHeight));
 
-		setLeftRimX((int)RIGHT_RIM_X  - (int)holeInNet);
+		backboardConnector.set((int)(RIGHT_RIM_X),
+				(int)(RIGHT_RIM_Y),
+				(int)(RIGHT_RIM_X + backboardGap),
+				(int)(RIGHT_RIM_Y - RIM_RADIUS));
+
+		setLeftRimX((int)RIGHT_RIM_X  - (int)holeInNet - RIM_RADIUS);
 		rimPaint.setColor(RIM_COLOR);
 	}
 
 
 	protected void drawRightRim(Canvas canvas)
 	{
-		//blue
-		Paint p = new Paint();
-		p.setColor(Color.rgb(66, 134, 244));
-		canvas.drawCircle((int) RIGHT_RIM_X, (int) RIGHT_RIM_Y, RIM_RADIUS, p);
+		canvas.drawCircle((int) RIGHT_RIM_X, (int) RIGHT_RIM_Y, RIM_RADIUS, rimPaint);
 	}
 
 	protected void drawLeftRim(Canvas canvas)
 	{
-		//yellow
-		Paint p = new Paint();
-		p.setColor(Color.rgb(214, 244, 65));
-		canvas.drawCircle(getLeftRimX(), (int)RIGHT_RIM_Y, RIM_RADIUS, p);
+		canvas.drawCircle(getLeftRimX(), (int)RIGHT_RIM_Y, RIM_RADIUS, rimPaint);
 	}
 
-	protected void drawBackBoard(Canvas canvas)
+	protected void drawBackboard(Canvas canvas)
 	{
-
 		canvas.drawRect(backboard, rimPaint);
-		canvas.drawRect(test, rimPaint);
+	}
 
+	protected void drawBackboardConnector(Canvas canvas)
+	{
+		canvas.drawRect(backboardConnector, rimPaint);
 	}
 
 	protected void draw(Canvas canvas)
 	{
 		drawLeftRim(canvas);
 		drawRightRim(canvas);
-		drawBackBoard(canvas);
+		drawBackboard(canvas);
+		drawBackboardConnector(canvas);
 	}
 
 	public Rect getBackboard()
 	{
 		return backboard;
+	}
+
+	public Rect getBackboardConnector()
+	{
+		return backboardConnector;
 	}
 
 	public static double getHoleInNet()

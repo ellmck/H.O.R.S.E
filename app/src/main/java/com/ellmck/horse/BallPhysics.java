@@ -7,7 +7,7 @@ public class BallPhysics {
 	private static final double ACCELERATION = 2;
 	// What proportion of the velocity is retained on a bounce?  if 1.0, no energy
 	// is lost, and the ball will bounce infinitely.
-	private static final double COEFFICIENT_OF_RESTITUTION = 0.6;
+	private static final double COEFFICIENT_OF_RESTITUTION = 0.7;
 	// While the ball is rolling along the bottom of the screen, its x velocity
 	// is multiplied by this amount each frame.
 	private static final double COEFFICIENT_OF_FRICTION = 0.9;
@@ -19,9 +19,8 @@ public class BallPhysics {
 		this.ball = ball;
 	}
 
-	public void ballAnimation(NetSprite net)
+	public void ballAnimation(NetSprite net, Background background)
 	{
-
 		if (ball == null || !ball.isMoving())
 		{
 			return;
@@ -40,53 +39,41 @@ public class BallPhysics {
 		int radius = ball.getRadius();
 		int maxY = 0 + radius - screenHeight * 2;
 		int maxX = screenWidth + 400 - radius;
-		int minY = screenHeight - radius;
+		int minY = screenHeight - radius  - background.getFloorThickness();
 		int minX = 0 + radius;
 		double xRolling = COEFFICIENT_OF_FRICTION * ball.getxVelocity();
-		double xCollision = -COEFFICIENT_OF_RESTITUTION * ball.getxVelocity();
-		double yCollision = -COEFFICIENT_OF_RESTITUTION * ball.getyVelocity();
-
 
 		// Ball is out of bounds in x dimension
 		if (ballX > maxX)
 		{
 			ball.setX(maxX);
-			ball.setxVelocity((int)xCollision);
+			ballXCollision();
 		}
 		else if (ballX < minX)
 		{
 			ball.setX(minX);
-			ball.setxVelocity((int)xCollision);
+			ballXCollision();
 		}
 
 		// Ball hits the floor
 		if (ballY > minY)
 		{
 			ball.setY(minY);
-			ball.setyVelocity((int)yCollision);
+			ballYCollision();
 		}
 		else if (ballY < maxY )
 		{
 			ball.setY(maxY);
-			ball.setyVelocity((int)yCollision);
+			ballYCollision();
 		}
 
+		//left and right rim physics
+		checkRimCollision(ballX, ballY, radius, net.getLeftRimX(), (int)net.RIGHT_RIM_Y, 20);
+		checkRimCollision(ballX, ballY, radius, (int)net.RIGHT_RIM_X, (int)net.RIGHT_RIM_Y, 20);
+
 		//backboard physics
-
 		//left and right of object physics
-		if (((ballX + radius > net.getLeftRimX() - 10) &&
-			(ballX - radius < net.getLeftRimX()  + 10) &&
-			(ballY + radius > net.RIGHT_RIM_Y) &&
-			(ballY - radius < net.RIGHT_RIM_Y)&&
-			isMovingTowardsObject(net.getLeftRimX(), (int)net.RIGHT_RIM_Y))
-
-			||
-
-			((ballX + radius > net.RIGHT_RIM_X - 10) &&
-			(ballX - radius < net.RIGHT_RIM_X  + 10) &&
-			(ballY + radius > net.RIGHT_RIM_Y) &&
-			(ballY - radius < net.RIGHT_RIM_Y)&&
-			isMovingTowardsObject((int)net.RIGHT_RIM_X, (int)net.RIGHT_RIM_Y)) || ((ballX + radius > net.getBackboard().left) &&
+		if 	(((ballX + radius > net.getBackboard().left) &&
 			(ballX - radius < net.getBackboard().right) &&
 			(ballY - radius < net.getBackboard().top) &&
 			(ballY + radius >net.getBackboard().bottom)) &&
@@ -94,36 +81,35 @@ public class BallPhysics {
 					isMovingTowardsObject(net.getBackboard().right, net.getBackboard().top) ||
 					isMovingTowardsObject((int)net.getBackboard().exactCenterX(), (int)net.getBackboard().exactCenterY())))
 		{
-			ball.setxVelocity((int)xCollision);
+			ballXCollision();
 		}
 
-		// bottom and top of object physics
-		if (((ballX + radius > net.getLeftRimX()) &&
-			(ballX - radius < net.getLeftRimX()) &&
-			(ballY - radius < net.RIGHT_RIM_Y + 10) &&
-			(ballY + radius > net.RIGHT_RIM_Y - 10) &&
-			isMovingTowardsObject(net.getLeftRimX(),(int) net.RIGHT_RIM_Y))
-
-				||
-
-			((ballX + radius > net.RIGHT_RIM_X) &&
-			(ballX - radius < net.RIGHT_RIM_X) &&
-			(ballY - radius < net.RIGHT_RIM_Y + 10) &&
-			(ballY + radius > net.RIGHT_RIM_Y - 10) &&
-			isMovingTowardsObject((int)net.RIGHT_RIM_X,(int) net.RIGHT_RIM_Y))
-
-					||
-			((ballX + radius > net.getBackboard().left) &&
-			(ballX - radius < net.getBackboard().right) &&
-			(ballY - radius < net.getBackboard().top) &&
-			(ballY + radius > net.getBackboard().bottom) &&
-			(isMovingTowardsObject(net.getBackboard().left, net.getBackboard().bottom) ||
-					isMovingTowardsObject((int)net.getBackboard().exactCenterX(), (int)net.getBackboard().exactCenterY()) ||
-					isMovingTowardsObject(net.getBackboard().right, net.getBackboard().top))))
-
+		if 	(((ballX + radius > net.getBackboardConnector().left) &&
+				(ballX - radius < net.getBackboardConnector().right) &&
+				(ballY - radius < net.getBackboardConnector().top) &&
+				(ballY + radius >net.getBackboardConnector().bottom)) &&
+				(isMovingTowardsObject(net.getBackboardConnector().left, net.getBackboardConnector().bottom) ||
+						isMovingTowardsObject(net.getBackboardConnector().right, net.getBackboardConnector().top) ||
+						isMovingTowardsObject((int)net.getBackboardConnector().exactCenterX(), (int)net.getBackboardConnector().exactCenterY())))
 		{
-			ball.setyVelocity((int)yCollision);
+			ballXCollision();
 		}
+
+
+
+		//TODO
+//		// bottom and top of object physics
+//		if (((ballX + radius > net.getBackboard().left) &&
+//			(ballX - radius < net.getBackboard().right) &&
+//			(ballY - radius < net.getBackboard().top) &&
+//			(ballY + radius > net.getBackboard().bottom) &&
+//			(isMovingTowardsObject(net.getBackboard().left, net.getBackboard().bottom) ||
+//					isMovingTowardsObject((int)net.getBackboard().exactCenterX(), (int)net.getBackboard().exactCenterY()) ||
+//					isMovingTowardsObject(net.getBackboard().right, net.getBackboard().top))))
+//
+//		{
+//			ballYCollision();
+//		}
 
 		// ball is rolling along the bottom
 		if (ball.getY() == minY)
@@ -131,14 +117,6 @@ public class BallPhysics {
 			ball.setxVelocity((int)xRolling);
 		}
 	}
-
-//	((ballX + radius > net.getBackboard().left) &&
-//			(ballX - radius < net.getBackboard().right) &&
-//			(ballY - radius < net.getBackboard().top) &&
-//			(ballY + radius >net.getBackboard().bottom)) &&
-//			(isMovingTowardsObject(net.getBackboard().left, net.getBackboard().bottom) ||
-//	isMovingTowardsObject(net.getBackboard().right, net.getBackboard().top) ||
-//	isMovingTowardsObject((int)net.getBackboard().exactCenterX(), (int)net.getBackboard().exactCenterY())))
 
 	public boolean isMovingTowardsObject(int objectX, int objectY)
 	{
@@ -148,5 +126,38 @@ public class BallPhysics {
 		double yVelocity = 0 - ball.getyVelocity();
 
 		return 0 < xDist*xVelocity + yDist*yVelocity;
+	}
+
+	public void checkRimCollision(int ballX, int ballY, int ballRadius, int rimX, int rimY, int rimRadius)
+	{
+		if ((ballX + ballRadius > rimX - rimRadius) &&
+			(ballX - ballRadius < rimX  + rimRadius) &&
+			(ballY + ballRadius > rimY) &&
+			(ballY - ballRadius < rimY)&&
+			isMovingTowardsObject(rimX, rimY))
+		{
+			ballXCollision();
+		}
+
+		if ((ballX + ballRadius > rimX) &&
+			(ballX - ballRadius < rimX)&&
+			(ballY - ballRadius < rimY + rimRadius) &&
+			(ballY + ballRadius > rimY - rimRadius) &&
+			isMovingTowardsObject(rimX, rimY))
+		{
+			ballYCollision();
+		}
+	}
+
+	public void ballXCollision()
+	{
+		double newVelocity = -COEFFICIENT_OF_RESTITUTION * ball.getxVelocity();
+		ball.setxVelocity((int)newVelocity);
+	}
+
+	public void ballYCollision()
+	{
+		double newVelocity = -COEFFICIENT_OF_RESTITUTION * ball.getyVelocity();
+		ball.setyVelocity((int)newVelocity);
 	}
 }

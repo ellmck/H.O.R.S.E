@@ -1,9 +1,9 @@
 package com.ellmck.horse;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,6 +15,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 	private NetSprite net;
 	private BallPhysics ballPhysics;
 	private AimSprite aimSprite;
+	private Background background;
+	private static Bitmap basketballImage;
 
 	public GameView(Context context)
 	{
@@ -22,6 +24,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 		getHolder().addCallback(this);
 		thread = new MainThread(getHolder(), this);
 		setFocusable(true);
+		basketballImage = BitmapFactory.decodeResource(context.getResources(),	R.drawable.basketball);
 	}
 
 	@Override
@@ -34,13 +37,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 	@Override
 	public void surfaceCreated(SurfaceHolder holder)
 	{
-//		ball = new BallSprite(BitmapFactory.decodeResource(getResources(), R.drawable.basketball));
-		ball = new BallSprite();
+		background = new Background();
+		ball = new BallSprite(basketballImage);
 		ballPhysics = new BallPhysics(ball);
 		net = new NetSprite(ball.getWidth() * 1.885);
 		aimSprite = new AimSprite();
 		thread.setRunning(true);
 		thread.start();
+//		setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackGround));
+
 
 	}
 
@@ -90,14 +95,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 				ball.setY(y);
 				aimSprite.setStopX(x);
 				aimSprite.setStopY(y);
-				aimSprite.setLineColor(Color.WHITE);
+				aimSprite.setLinePaint(aimSprite.getLineColor());
 				break;
 			case MotionEvent.ACTION_UP:
 				double xDiff = -(x - aimSprite.getStartX())*0.2;
 				double yDiff = -(y - aimSprite.getStartY())*0.2;
 				ball.setxVelocity((int)xDiff);
 				ball.setyVelocity((int)yDiff);
-				aimSprite.setLineColor(0);
+				aimSprite.setLinePaint(0);
 
 				if (xDiff < -10 || xDiff > 10 || yDiff < -10 || yDiff > 10 )
 				{
@@ -116,7 +121,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 
 	public void update()
 	{
-		ballPhysics.ballAnimation(net);
+		ballPhysics.ballAnimation(net, background);
 	}
 
 	@Override
@@ -127,6 +132,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 			return;
 		}
 		super.draw(canvas);
+		background.draw(canvas);
 		ball.draw(canvas);
 		net.draw(canvas);
 		aimSprite.draw(canvas);
