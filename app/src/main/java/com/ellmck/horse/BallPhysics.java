@@ -13,13 +13,14 @@ public class BallPhysics {
 	private static final double COEFFICIENT_OF_FRICTION = 0.9;
 
 	private BallSprite ball;
+	private boolean playerChanged = false;
 
 	public BallPhysics(BallSprite ball)
 	{
 		this.ball = ball;
 	}
 
-	public void ballAnimation(NetSprite net, Background background)
+	public void ballAnimation(NetSprite net, Background background, ScoreRecording scoreRecording)
 	{
 		if (ball == null || !ball.isMoving())
 		{
@@ -39,7 +40,7 @@ public class BallPhysics {
 		int radius = ball.getRadius();
 		int maxY = 0 + radius - screenHeight * 2;
 		int maxX = screenWidth + 400 - radius;
-		int minY = screenHeight - radius  - background.getFloorThickness();
+		int minY = screenHeight - background.getFloorThickness();
 		int minX = 0 + radius;
 		double xRolling = COEFFICIENT_OF_FRICTION * ball.getxVelocity();
 
@@ -60,6 +61,7 @@ public class BallPhysics {
 		{
 			ball.setY(minY);
 			ballYCollision();
+			scoreRecording.setBallTouchedFloor(scoreRecording.getBallTouchedFloor() + 1);
 		}
 		else if (ballY < maxY )
 		{
@@ -84,18 +86,45 @@ public class BallPhysics {
 			ballXCollision();
 		}
 
+		//backboard connector
 		if 	(((ballX + radius > net.getBackboardConnector().left) &&
 				(ballX - radius < net.getBackboardConnector().right) &&
 				(ballY - radius < net.getBackboardConnector().top) &&
 				(ballY + radius >net.getBackboardConnector().bottom)) &&
-				(isMovingTowardsObject(net.getBackboardConnector().left, net.getBackboardConnector().bottom) ||
-						isMovingTowardsObject(net.getBackboardConnector().right, net.getBackboardConnector().top) ||
-						isMovingTowardsObject((int)net.getBackboardConnector().exactCenterX(), (int)net.getBackboardConnector().exactCenterY())))
+				isMovingTowardsObject(net.getBackboardConnector().right, net.getBackboardConnector().top))
 		{
+			ball.setY((int)net.RIGHT_RIM_Y + radius);
 			ballXCollision();
+			ball.setxVelocity(ball.getxVelocity() - 5);
 		}
 
 
+		//SCORED!
+		if(ball.getyVelocity() > 0 &&
+			ballX > net.getLeftRimX() &&
+			ballX < net.RIGHT_RIM_X &&
+			ballY - radius < net.RIGHT_RIM_Y &&
+			ballY + radius > net.RIGHT_RIM_Y)
+		{
+			scoreRecording.setScored(true);
+		}
+		//reset game for next player
+		if (scoreRecording.getBallTouchedFloor() > 2)
+		{
+			if(scoreRecording.isScored())
+			{
+				ball.setX(scoreRecording.getCurrentPlayer().getStartingX());
+				ball.setY(scoreRecording.getCurrentPlayer().getStartingY());
+				ball.setxVelocity(0);
+				ball.setyVelocity(0);
+			}
+
+			if(!scoreRecording.isPlayerHasChanged())
+			{
+				scoreRecording.changePlayer();
+				scoreRecording.setPlayerHasChanged(true);
+			}
+		}
 
 		//TODO
 //		// bottom and top of object physics

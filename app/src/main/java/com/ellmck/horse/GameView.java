@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,15 +17,43 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 	private BallPhysics ballPhysics;
 	private AimSprite aimSprite;
 	private Background background;
+	private ScoreRecording scoreRecording;
 	private static Bitmap basketballImage;
 
 	public GameView(Context context)
 	{
 		super(context);
+		init(context);
+
+	}
+
+	public GameView(Context context, AttributeSet attrs)
+	{
+		super(context, attrs);
+		init(context);
+	}
+
+	public GameView(Context context, AttributeSet attrs, int defStyle)
+	{
+		super(context, attrs, defStyle);
+		init(context);
+	}
+
+	private void init(Context context)
+	{
+
 		getHolder().addCallback(this);
 		thread = new MainThread(getHolder(), this);
 		setFocusable(true);
+		setZOrderOnTop(false);
 		basketballImage = BitmapFactory.decodeResource(context.getResources(),	R.drawable.basketball);
+		background = new Background();
+		ball = new BallSprite(basketballImage);
+		ballPhysics = new BallPhysics(ball);
+		net = new NetSprite(ball.getWidth() * 1.885);
+		aimSprite = new AimSprite();
+		scoreRecording = new ScoreRecording(context);
+
 	}
 
 	@Override
@@ -37,16 +66,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 	@Override
 	public void surfaceCreated(SurfaceHolder holder)
 	{
-		background = new Background();
-		ball = new BallSprite(basketballImage);
-		ballPhysics = new BallPhysics(ball);
-		net = new NetSprite(ball.getWidth() * 1.885);
-		aimSprite = new AimSprite();
 		thread.setRunning(true);
 		thread.start();
-//		setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBackGround));
-
-
 	}
 
 	@Override
@@ -84,11 +105,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 //						&& y >= yOfYourBitmap && y < (yOfYourBitmap + yourBitmap.getHeight())) {
 //					//tada, if this is true, you've started your click inside your bitmap
 //				}
+				scoreRecording.getCurrentPlayer().setStartingX(x);
+				scoreRecording.getCurrentPlayer().setStartingY(y);
+				if (!scoreRecording.getOtherPlayer().isScored())
+				{
+					ball.setX(x);
+					ball.setY(y);
+					aimSprite.setStartX(x);
+					aimSprite.setStartY(y);
+				}
+				else
+				{
+
+				}
+				scoreRecording.setScored(false);
+				scoreRecording.setBallTouchedFloor(0);
 				ball.setMoving(false);
-				ball.setX(x);
-				ball.setY(y);
-				aimSprite.setStartX(x);
-				aimSprite.setStartY(y);
 				break;
 			case MotionEvent.ACTION_MOVE:
 				ball.setX(x);
@@ -107,8 +139,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 				if (xDiff < -10 || xDiff > 10 || yDiff < -10 || yDiff > 10 )
 				{
 					ball.setMoving(true);
+					scoreRecording.setPlayerHasChanged(false);
 				}
-
 				break;
 
 			default:
@@ -121,7 +153,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 
 	public void update()
 	{
-		ballPhysics.ballAnimation(net, background);
+		ballPhysics.ballAnimation(net, background, scoreRecording);
 	}
 
 	@Override
@@ -136,5 +168,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 		ball.draw(canvas);
 		net.draw(canvas);
 		aimSprite.draw(canvas);
+		scoreRecording.draw(canvas);
+
 	}
 }
