@@ -1,9 +1,11 @@
 package com.ellmck.horse;
 
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 public class BallSprite
 {
@@ -17,6 +19,7 @@ public class BallSprite
 	private boolean isMoving = false;
 	private static final Paint ballPaint = new Paint();
 	private static final int BALL_COLOR = Color.rgb(105,105,105);
+	private static Rect ballRect = new Rect();
 
 	protected BallSprite(Bitmap bmp)
 	{
@@ -31,6 +34,7 @@ public class BallSprite
 	{
 		this.x += xVelocity;
 		this.y += yVelocity;
+		ballRect.set(x, x+radius, y, y+radius);
 	}
 
 	protected int getHeight()
@@ -109,9 +113,13 @@ public class BallSprite
 		this.isMoving = isMoving;
 	}
 
+	public static Rect getBallRect()
+	{
+		return ballRect;
+	}
+
 	protected void draw (Canvas canvas)
 	{
-//		canvas.drawCircle(x, y, radius, ballPaint);
 		canvas.drawBitmap(image, x - radius,  y - radius, null);
 	}
 

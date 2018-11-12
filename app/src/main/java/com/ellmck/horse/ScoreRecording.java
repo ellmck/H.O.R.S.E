@@ -20,6 +20,7 @@ public class ScoreRecording
 	private int ballTouchedFloor;
 	private static boolean togglePlayer = false;
 	private boolean playerHasChanged = false;
+	private boolean ballInMotion = false;
 
 	public ScoreRecording(Context context)
 	{
@@ -100,17 +101,30 @@ public class ScoreRecording
 		this.playerHasChanged = playerHasChanged;
 	}
 
+	public boolean isBallInMotion()
+	{
+		return ballInMotion;
+	}
+
+	public void setBallInMotion(boolean ballInMotion)
+	{
+		this.ballInMotion = ballInMotion;
+	}
+
 	public void draw(Canvas canvas)
 	{
 		canvas.drawText(currentPlayer.getName(), 0 + 100, SCREEN_HEIGHT - 100, playerTextPaint);
-		if (currentPlayer.isScored() && getBallTouchedFloor() == 0)
+		if (currentPlayer.isScored() && isBallInMotion())
 		{
 			setCentreText("SCORED!");
 			canvas.drawText(getCentreText(), (float)(SCREEN_WIDTH * 0.5), (float)(SCREEN_HEIGHT * 0.5), centreTextPaint);
 		}
-		else
+		else if (!currentPlayer.isScored() && getBallTouchedFloor() > 0 && isBallInMotion())
 		{
 			setCentreText("MISS");
+			canvas.drawText(getCentreText(), (float)(SCREEN_WIDTH * 0.5), (float)(SCREEN_HEIGHT * 0.5), centreTextPaint);
+
 		}
+
 	}
 }

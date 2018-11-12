@@ -49,8 +49,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 		basketballImage = BitmapFactory.decodeResource(context.getResources(),	R.drawable.basketball);
 		background = new Background();
 		ball = new BallSprite(basketballImage);
-		ballPhysics = new BallPhysics(ball);
-		net = new NetSprite(ball.getWidth() * 1.885);
+		ballPhysics = new BallPhysics();
+		net = new NetSprite(ball.getWidth() * 2);
 		aimSprite = new AimSprite();
 		scoreRecording = new ScoreRecording(context);
 
@@ -94,9 +94,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 	@Override
 	public boolean onTouchEvent(MotionEvent e)
 	{
+		if(scoreRecording.isBallInMotion())
+		{
+			return false;
+		}
+
 		int action = e.getAction();
 		int x = (int) e.getX();
 		int y = (int) e.getY();
+
 		switch(action)
 		{
 			case MotionEvent.ACTION_DOWN:
@@ -140,6 +146,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 				{
 					ball.setMoving(true);
 					scoreRecording.setPlayerHasChanged(false);
+					scoreRecording.setBallInMotion(true);
 				}
 				break;
 
@@ -153,7 +160,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
 
 	public void update()
 	{
-		ballPhysics.ballAnimation(net, background, scoreRecording);
+		ballPhysics.ballAnimation(ball, net, background, scoreRecording);
 	}
 
 	@Override
